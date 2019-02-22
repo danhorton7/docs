@@ -92,6 +92,36 @@ $.ajax({
 
 Notice that we manually trigger the `select2:select` event and pass along the entire `data` object.  This allows other handlers to [access additional properties of the selected item](/programmatic-control/events#triggering-events).
 
+### Preselecting options in an remotely-sourced (AJAX) Select2 with multiple values
+```
+$('.studentSelect').select2({
+    ajax: {
+        url: '/api/students',
+    },
+    });
+    // Fetch the preselected item, and add to the control
+var studentSelect = $('.studentSelect');
+$.ajax({
+    type: 'GET',
+    url: '/api/students/s/' + student_id
+}).then(function (data) {
+    console.log(data);
+    // create the option and append to Select2
+    data.results.forEach(function(d) {
+        var option = new Option(d.full_name, d.id, true, true);
+        studentSelect.append(option).trigger('change');
+    });
+
+    // manually trigger the `select2:select` event
+    studentSelect.trigger({
+        type: 'select2:select',
+        params: {
+            data: data
+        }
+    });
+});
+```
+
 ## Clearing selections
 
 You may clear all current selections in a Select2 control by setting the value of the control to `null`:
